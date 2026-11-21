@@ -179,7 +179,7 @@ $("q").addEventListener("keydown", e => { if (e.key === "Enter") consultar(true)
 $("go").onclick = () => consultar(true);
 $("hclr").onclick = () => { hist = []; try { localStorage.removeItem("hist"); } catch (e) {} chips(); };
 $("mF").onclick = () => setModo("FALSE"); $("mT").onclick = () => setModo("TRUE");
-$("foot").textContent = K.length + " alarmes · funciona sem internet";
+$("foot").textContent = K.length + " alarmes · Funciona sem Internet";
 chips(); setModo(modo); $("q").focus();
 
 if ("serviceWorker" in navigator) {
@@ -189,7 +189,7 @@ if ("serviceWorker" in navigator) {
       .catch(() => { $("off").textContent = "Offline indisponível neste navegador"; });
   });
 } else {
-  $("off").textContent = location.protocol === "file:" ? "Arquivo local: funciona sem internet" : "Para usar offline, abra pelo endereço https:// do app";
+  $("off").textContent = location.protocol === "file:" ? "Arquivo local: Funciona sem Internet" : "Para usar offline, abra pelo endereço https:// do app";
 }
 </script>
 </body>
