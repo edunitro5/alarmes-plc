@@ -6,11 +6,11 @@
 <meta name="theme-color" content="#0e7490">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Alarmes PLC">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Alarmes PLC">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
 <title>Consulta de Alarmes PLC - EH Tech Automation Works</title>
 <style>
 :root{--bg:#f1f5f9;--card:#fff;--text:#0f172a;--muted:#64748b;--line:#e2e8f0;--brand:#0e7490;--bt:#fff;--ok:#047857;--err:#b91c1c;--chip:#e0f2fe;color-scheme:light}
@@ -40,7 +40,7 @@ dt{color:var(--muted)}dd{margin:0;font-weight:600;word-break:break-word}
 .list{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .item{display:flex;gap:10px;text-align:left;background:var(--bg);color:var(--text);border:1px solid var(--line);padding:10px 12px;font-weight:500;font-size:.9rem}
 .item b{font-family:ui-monospace,Consolas,monospace}
-.hist{margin-top:16px}.hist h2{font-size:.85rem;color:var(--muted);margin:0 0 8px}
+.hist{margin-top:16px}.hh{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}.hist h2{font-size:.85rem;color:var(--muted);margin:0}.hh button{padding:6px 12px;font-size:.8rem}
 .chips{display:flex;flex-wrap:wrap;gap:8px}.chip{background:var(--chip);color:var(--text);padding:8px 12px;border-radius:999px;font-size:.9rem}
 body{display:flex;flex-direction:column}main{width:100%}
 .top{display:flex;align-items:center;gap:12px;margin-bottom:16px}.top img{width:56px;height:56px;border-radius:14px;flex:none}
@@ -64,8 +64,9 @@ footer{color:var(--muted);font-size:.8rem;text-align:center;margin-top:18px}
     </div>
     <div id="out" aria-live="polite"><div class="msg">Aguardando consulta…</div></div>
   </div>
-  <div class="hist" id="hb" hidden><h2>Consultas recentes</h2><div class="chips" id="chips"></div></div>
+  <div class="hist" id="hb" hidden><div class="hh"><h2>Consultas recentes</h2><button class="ghost" id="hclr">Apagar</button></div><div class="chips" id="chips"></div></div>
   <footer id="foot"></footer>
+  <footer id="off" style="margin-top:4px"></footer>
 </main>
 <div class="brand"><b>EH Tech</b> <span>Automation Works</span></div>
 <script>
@@ -176,12 +177,19 @@ function setModo(m) {
 $("q").addEventListener("input", () => consultar(false));
 $("q").addEventListener("keydown", e => { if (e.key === "Enter") consultar(true); });
 $("go").onclick = () => consultar(true);
+$("hclr").onclick = () => { hist = []; try { localStorage.removeItem("hist"); } catch (e) {} chips(); };
 $("mF").onclick = () => setModo("FALSE"); $("mT").onclick = () => setModo("TRUE");
 $("foot").textContent = K.length + " alarmes · funciona sem internet";
 chips(); setModo(modo); $("q").focus();
 
 if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("sw.js").then(() => navigator.serviceWorker.ready)
+      .then(() => { $("off").textContent = "✓ Pronto para uso offline"; })
+      .catch(() => { $("off").textContent = "Offline indisponível neste navegador"; });
+  });
+} else {
+  $("off").textContent = location.protocol === "file:" ? "Arquivo local: funciona sem internet" : "Para usar offline, abra pelo endereço https:// do app";
 }
 </script>
 </body>
